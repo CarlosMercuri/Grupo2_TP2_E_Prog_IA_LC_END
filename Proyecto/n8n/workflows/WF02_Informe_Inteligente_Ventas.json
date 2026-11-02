@@ -1,0 +1,184 @@
+{
+  "name": "WF02 - Informe Inteligente de Ventas",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -80
+      ],
+      "id": "1779df92-631b-4f76-9eb5-559e3ee70520",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "http://host.docker.internal:8000/indicadores",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -256,
+        -80
+      ],
+      "id": "86249799-335b-4324-9a92-3764179a3c15",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "3c97a010-370d-462f-8f33-1cc31a03a533",
+              "leftValue": "={{ $json.cantidad_operaciones }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        -32,
+        -80
+      ],
+      "id": "dbff79af-d7bf-49a4-80a2-adf988367459",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Sos un analista comercial especializado en ventas.\n\nAnalizá los siguientes indicadores calculados por Python:\n\n{{ JSON.stringify($json) }}\n\nGenerá un informe en español que incluya:\n1. Resumen de la actividad comercial.\n2. Análisis de ingresos y categorías.\n3. Productos destacados.\n4. Tres recomendaciones comerciales concretas.\n\nReglas:\n- No inventes cifras ni datos.\n- Utilizá exclusivamente los indicadores proporcionados.\n- Diferenciá los resultados calculados de tus recomendaciones.\n- Si falta información, indicalo.\n- El informe debe ser claro, breve y profesional.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        192,
+        -176
+      ],
+      "id": "15a09399-5920-422e-988d-581b37264049",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        144,
+        144
+      ],
+      "id": "ff9859e1-4757-49df-a2c6-b4f5d04ff5eb",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Uqnvpv7o4NEnJafn",
+          "name": "Gemini_TP2_Grupo2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Consultar anomalías de ventas para complementar el informe comercial",
+        "url": "http://host.docker.internal:8000/anomalias",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.5,
+      "position": [
+        368,
+        160
+      ],
+      "id": "44113e25-d7b2-41c7-a54f-6d38a24ded9f",
+      "name": "HTTP Request1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "b057dfad-f1ae-4590-a4ae-ab28fe2a9e29",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f9e51bc5ea1acff2cb085edb10f7414fafe2b7f8a77a24a97c6df99845c915fa"
+  },
+  "nodeGroups": [],
+  "id": "BNWXq4xTCnENZAzN",
+  "tags": []
+}
