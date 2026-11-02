@@ -171,9 +171,14 @@ elif seccion == "Informe con IA":
     if st.button("Generar informe con IA"):
         with st.spinner("Gemini está analizando las ventas..."):
             try:
+                #respuesta = requests.post(
+                #    N8N_URL,
+                #    json={},
+                #    timeout=120
+                #)
                 respuesta = requests.post(
                     N8N_URL,
-                    json={},
+                    json={"accion": "generar_informe"},
                     timeout=120
                 )
                 respuesta.raise_for_status()

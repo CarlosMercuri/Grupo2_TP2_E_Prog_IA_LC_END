@@ -42,11 +42,82 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.4,
       "position": [
-        224,
+        448,
         0
       ],
       "id": "42836846-5d10-40ff-b02d-2adae1c1ed80",
       "name": "Call 'WF02 - Informe Inteligente de Ventas'"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "b7f6816a-b626-4113-9fb2-e6a0f7c9087a",
+              "leftValue": "={{ $json.body?.accion ?? '' }}",
+              "rightValue": "generar_informe",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        224,
+        16
+      ],
+      "id": "14c3cb1e-1ef8-45f3-80b5-f546f43f47f3",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a48de56c-137f-4760-b61c-1c43fb2e7fe6",
+              "name": "error",
+              "value": "Solicitud inválida: accion debe ser generar_informe",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        432,
+        256
+      ],
+      "id": "fb6e99b7-9a2b-4e47-8b21-ac79a6ddf5f2",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        656,
+        256
+      ],
+      "id": "557e1ff8-68a4-422d-9db5-9d6aa21f5c66",
+      "name": "Respond Error 400"
     },
     {
       "parameters": {
@@ -57,11 +128,11 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        448,
+        672,
         0
       ],
       "id": "4747babe-54f5-409e-b498-437a587b6a68",
-      "name": "Respond to Webhook"
+      "name": "Respond to Webhook (200)"
     }
   ],
   "pinData": {},
@@ -70,7 +141,7 @@
       "main": [
         [
           {
-            "node": "Call 'WF02 - Informe Inteligente de Ventas'",
+            "node": "If",
             "type": "main",
             "index": 0
           }
@@ -81,7 +152,36 @@
       "main": [
         [
           {
-            "node": "Respond to Webhook",
+            "node": "Respond to Webhook (200)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Call 'WF02 - Informe Inteligente de Ventas'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Respond Error 400",
             "type": "main",
             "index": 0
           }
@@ -94,7 +194,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "126ea6c3-b061-448f-93b2-05f91f5b9411",
+  "versionId": "a75b95ed-93dd-46be-b433-2fa0eb0c20e4",
   "meta": {
     "instanceId": "f9e51bc5ea1acff2cb085edb10f7414fafe2b7f8a77a24a97c6df99845c915fa"
   },
