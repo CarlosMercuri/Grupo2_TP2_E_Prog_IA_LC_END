@@ -1,0 +1,104 @@
+{
+  "name": "WF03 - Integracion Streamlit IA",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "informe-ventas",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2eb148be-5018-4fe0-8acc-b9c1855479cd",
+      "name": "Webhook",
+      "webhookId": "f5d3a231-c639-4cdf-a07f-6233b79d8ec9"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "BNWXq4xTCnENZAzN",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/BNWXq4xTCnENZAzN",
+          "cachedResultName": "WF02 - Informe Inteligente de Ventas"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "42836846-5d10-40ff-b02d-2adae1c1ed80",
+      "name": "Call 'WF02 - Informe Inteligente de Ventas'"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "4747babe-54f5-409e-b498-437a587b6a68",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Call 'WF02 - Informe Inteligente de Ventas'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'WF02 - Informe Inteligente de Ventas'": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "126ea6c3-b061-448f-93b2-05f91f5b9411",
+  "meta": {
+    "instanceId": "f9e51bc5ea1acff2cb085edb10f7414fafe2b7f8a77a24a97c6df99845c915fa"
+  },
+  "nodeGroups": [],
+  "id": "YT5bdmkSGFyslSjM",
+  "tags": []
+}

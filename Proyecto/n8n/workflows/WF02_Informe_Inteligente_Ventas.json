@@ -108,6 +108,19 @@
       ],
       "id": "44113e25-d7b2-41c7-a54f-6d38a24ded9f",
       "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -576,
+        160
+      ],
+      "id": "9415a107-d661-494a-886e-4fb245b16159",
+      "name": "When Executed by Another Workflow"
     }
   ],
   "pinData": {},
@@ -166,14 +179,25 @@
           }
         ]
       ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "b057dfad-f1ae-4590-a4ae-ab28fe2a9e29",
+  "versionId": "194ef4af-179d-49cb-828a-3818ddf18179",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "f9e51bc5ea1acff2cb085edb10f7414fafe2b7f8a77a24a97c6df99845c915fa"
