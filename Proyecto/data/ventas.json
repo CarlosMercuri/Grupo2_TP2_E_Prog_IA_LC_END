@@ -110,5 +110,37 @@
         "precio": 1200000.0,
         "cantidad": 13,
         "total_venta": 15600000.0
+    },
+    {
+        "id": 15,
+        "producto": "Remera Lisa",
+        "categoria": "Indumentaria",
+        "precio": 8500.0,
+        "cantidad": 3,
+        "total_venta": 25500.0
+    },
+    {
+        "id": 16,
+        "producto": "Remera Lisa",
+        "categoria": "Indumentaria",
+        "precio": 8500.0,
+        "cantidad": 3,
+        "total_venta": 25500.0
+    },
+    {
+        "id": 17,
+        "producto": "Notebook",
+        "categoria": "Informatica",
+        "precio": 1500000.0,
+        "cantidad": 2,
+        "total_venta": 3000000.0
+    },
+    {
+        "id": 18,
+        "producto": "Notebook",
+        "categoria": "Informatica",
+        "precio": 1500000.0,
+        "cantidad": 2,
+        "total_venta": 3000000.0
     }
 ]
