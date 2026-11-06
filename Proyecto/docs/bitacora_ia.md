@@ -25,7 +25,7 @@
 3. **Separar responsabilidades en tres workflows:** WF01 registra anomalías; WF02 elabora informes; WF03 expone el webhook, valida las solicitudes y delega la generación del informe a WF02.
 4. **Usar Docker para n8n, sin contenedorización total:** el `compose.yaml` inicia n8n; FastAPI y Streamlit permanecen ejecutándose directamente en Ubuntu. Esta elección satisface la integración utilizada en el laboratorio, sin afirmar que todos los servicios se desplieguen mediante Compose.
 5. **Controlar explícitamente los errores de entrada:** Streamlit envía `{"accion":"generar_informe"}`; WF03 rechaza solicitudes sin esa acción mediante HTTP 400.
-6. **Versionar de manera selectiva:** se publicaron cambios en la rama `RamaDeCarlos`, incluyendo los JSON de workflows. Se evitó incorporar por accidente modificaciones locales de `Proyecto/data/ventas.json`.
+6. **Versionar de manera selectiva:** Posteriormente se incorporaron a GitHub las 18 ventas de ejemplo y se eliminó test_api.py por contener pruebas desactualizadas..
 
 ## 3. Dificultades y correcciones
 
@@ -64,6 +64,5 @@
 - Confirmar y documentar la **activación y ejecución automática** del Schedule Trigger de WF01, si se desea utilizarlo en la demostración.
 - Mejorar la presentación Markdown de algunos informes generados por Gemini.
 - Verificar el procedimiento de importación en una instancia limpia de n8n y documentar la reasociación de credenciales y subworkflows si corresponde.
-- Completar la asignación de responsabilidades de cada integrante en `Proyecto/docs/responsabilidades.md` si aún contiene valores de ejemplo.
 
 **Referencias internas:** [`README.md`](../../README.md), [`arquitectura.md`](arquitectura.md), [`workflows n8n`](../n8n/workflows/)
