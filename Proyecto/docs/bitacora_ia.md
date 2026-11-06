@@ -17,7 +17,7 @@
 | 2026-11-01 a 2026-11-02 | ChatGPT | Diseño de **WF03 — Integración Streamlit IA** y del botón **Generar informe con IA** | WF03 recibe `POST /webhook/informe-ventas`, invoca WF02 como subworkflow y devuelve el informe a Streamlit. Se decidió reutilizar WF02, no duplicar el agente. |
 | 2026-11-02 | ChatGPT | Revisión de requisitos y mejora de WF03 | Se incorporó un IF que valida `body.accion == "generar_informe"`. Solicitudes válidas ejecutan WF02 y retornan el informe; las inválidas retornan HTTP 400 y un JSON de error. |
 | 2026-11-02 | ChatGPT | Asistencia en documentación y organización de los archivos versionados | Se actualizaron el README principal, la documentación de arquitectura y los JSON exportados. Se verificaron las rutas del repositorio y se excluyeron del commit los datos modificados durante pruebas. |
-
+| 2026-11-06 | ChatGPT | Verificación del entorno y revisión final del proyecto | Se comprobó Docker con n8n activo, FastAPI mediante /health, acceso a Swagger UI y Streamlit, e integración con Gemini. Se actualizó GitHub y se eliminó test_api.py por contener pruebas dependientes del dataset original. |
 ## 2. Decisiones técnicas principales
 
 1. **Mantener cálculos y validación en Python:** FastAPI, Pydantic y `logica.py` gestionan operaciones, indicadores y detección de anomalías. La IA no reemplaza estos cálculos ni modifica `data/ventas.json`.
@@ -42,7 +42,7 @@
 
 ## 4. Verificaciones realizadas
 
-- **API REST:** se informó la ejecución satisfactoria de **11 pruebas automatizadas** mediante `pytest` en el entorno de desarrollo. Los tests cubren operaciones de ventas, validación de datos, importación, indicadores, anomalías y errores de persistencia. Se conserva como referencia el dataset original de pruebas.
+- **API REST:** se realizaron pruebas automatizadas durante el desarrollo. Posteriormente se eliminó `test_api.py` porque sus verificaciones dependían de un dataset original de 14 ventas. La aplicación utiliza actualmente 18 registros de ejemplo. Se mantienen las verificaciones funcionales y de integración.
 - **WF01:** ejecución manual de detección de anomalías y registro de una alerta en la Data Table de n8n. El Schedule Trigger fue configurado; **su ejecución automática no está acreditada por esa prueba manual**.
 - **WF02:** generación de un informe comercial con Gemini, tomando indicadores reales devueltos por FastAPI y con la herramienta de anomalías configurada.
 - **WF03, entrada inválida:** `POST /webhook/informe-ventas` con `{}` retornó **HTTP 400** y un cuerpo JSON con el campo `error`.
@@ -66,4 +66,4 @@
 - Verificar el procedimiento de importación en una instancia limpia de n8n y documentar la reasociación de credenciales y subworkflows si corresponde.
 - Completar la asignación de responsabilidades de cada integrante en `Proyecto/docs/responsabilidades.md` si aún contiene valores de ejemplo.
 
-**Referencias internas:** [`README.md`](../../README.md), [`arquitectura.md`](arquitectura.md), [`workflows n8n`](../n8n/workflows/), [`test_api.py`](../tests/test_api.py).
+**Referencias internas:** [`README.md`](../../README.md), [`arquitectura.md`](arquitectura.md), [`workflows n8n`](../n8n/workflows/)
