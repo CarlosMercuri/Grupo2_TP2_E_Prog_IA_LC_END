@@ -11,6 +11,10 @@ import requests
 import streamlit as st
 
 API_URL = os.getenv("API_URL", "http://localhost:8000")
+N8N_URL = os.getenv(
+    "N8N_WEBHOOK_URL",
+    "http://127.0.0.1:5678/webhook/informe-ventas"
+)
 
 st.set_page_config(page_title="Analizador de Ventas", page_icon="📊", layout="wide")
 
@@ -44,7 +48,8 @@ def mostrar_error(error: str | None) -> bool:
 st.title("📊 Analizador de Ventas")
 seccion = st.sidebar.radio(
     "Sección",
-    ["Registrar venta", "Ventas", "Importar CSV", "Indicadores", "Anomalías"],
+    ["Registrar venta", "Ventas", "Importar CSV", "Indicadores", "Anomalías", "Informe con IA"],
+    #["Registrar venta", "Ventas", "Importar CSV", "Indicadores", "Anomalías"],
 )
 st.sidebar.caption(f"API: {API_URL}")
 
@@ -157,3 +162,37 @@ elif seccion == "Anomalías":
         else:
             st.warning(f"Se detectaron {res['cantidad']} anomalías. Revisalas antes de confiar en los indicadores.")
             st.dataframe(pd.DataFrame(res["anomalias"]), use_container_width=True, hide_index=True)
+
+# ------------------------------------------------------------ Informe con IA
+elif seccion == "Informe con IA":
+    st.subheader("Informe comercial con Inteligencia Artificial")
+    st.write("Generá un análisis de ventas utilizando n8n y Google Gemini.")
+
+    if st.button("Generar informe con IA"):
+        with st.spinner("Gemini está analizando las ventas..."):
+            try:
+                #respuesta = requests.post(
+                #    N8N_URL,
+                #    json={},
+                #    timeout=120
+                #)
+                respuesta = requests.post(
+                    N8N_URL,
+                    json={"accion": "generar_informe"},
+                    timeout=120
+                )
+                respuesta.raise_for_status()
+
+                datos = respuesta.json()
+                informe = datos.get("output", "")
+
+                if informe:
+                    st.success("Informe generado correctamente")
+                    st.markdown(informe)
+                else:
+                    st.error("n8n no devolvió un informe.")
+
+            except requests.exceptions.RequestException as e:
+                st.error(f"Error de comunicación con n8n: {e}")
+            except ValueError:
+                st.error("La respuesta de n8n no contiene un JSON válido.")
