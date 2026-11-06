@@ -1,10 +1,10 @@
-# Analizador de Ventas — TP2
+# Analizador de Ventas — TP FINAL
 
 Sistema integrado de análisis de ventas desarrollado con **Python (FastAPI + Streamlit)**, **n8n (Low-Code)** e **inteligencia artificial (Google Gemini mediante un agente en n8n)**. Parte del TP1 (Analizador de Ventas por consola) y permite registrar operaciones, analizar indicadores, detectar anomalías y generar informes comerciales con IA.
 
 **Materia:** Elementos de Programación IA y LowCode · **Trabajo Práctico 2** · **2.º cuatrimestre de 2026**.
 
-> **Estado funcional:** API REST, interfaz Streamlit, persistencia JSON, pruebas automatizadas, n8n en Docker y **tres workflows integrados** (WF01, WF02 y WF03). Se verificó la generación de informes con Gemini desde Streamlit y el rechazo de solicitudes inválidas por el webhook.
+> **Estado funcional:** API REST, interfaz Streamlit, persistencia JSON, n8n en Docker y **tres workflows integrados** (WF01, WF02 y WF03). Se verificó la generación de informes con Gemini desde Streamlit y el rechazo de solicitudes inválidas por el webhook.
 >
 > **Alcance:** prototipo mínimo viable (MVP) para fines académicos. No es una aplicación preparada para exposición pública sin medidas adicionales de seguridad.
 
@@ -46,7 +46,7 @@ flowchart LR
 
 **Acceso desde Docker hacia FastAPI:** el contenedor utiliza `http://host.docker.internal:8000`, habilitado en Linux por `extra_hosts: host.docker.internal:host-gateway` en `compose.yaml`. FastAPI debe escuchar en `0.0.0.0`, no únicamente en `127.0.0.1`.
 
-> El archivo `Proyecto/docs/arquitectura.md` es un documento complementario del repositorio; debe actualizarse para reflejar esta arquitectura y los workflows finales.
+> El archivo [`Proyecto/docs/arquitectura.md`](Proyecto/docs/arquitectura.md) documenta en detalle la arquitectura implementada y los tres workflows.
 
 ## 3. Requisitos
 
@@ -56,7 +56,7 @@ flowchart LR
 - **Acceso a Internet** para usar Google Gemini, y una **clave de API válida** configurada como credencial dentro de n8n. La disponibilidad y los límites de la cuota gratuita dependen del proveedor.
 - Puertos `8000`, `8501` y `5678` disponibles en el entorno donde se ejecutan los servicios.
 
-Los paquetes Python se declaran en [`Proyecto/requirements.txt`](Proyecto/requirements.txt), incluidos FastAPI, Uvicorn, Pydantic, pandas, Streamlit, Requests, pytest y httpx.
+Los paquetes Python se declaran en [`Proyecto/requirements.txt`](Proyecto/requirements.txt), incluidos FastAPI, Uvicorn, Pydantic, pandas, Streamlit, Requests, además de dependencias auxiliares de pruebas declaradas en el archivo.
 
 ## 4. Instalación
 
@@ -220,17 +220,9 @@ Si Streamlit se despliega dentro de otro contenedor o en otra máquina, `127.0.0
 
 ## 9. Pruebas y verificación
 
-**Pruebas automatizadas de la API:**
+La verificación del MVP se realiza mediante pruebas funcionales y de integración de FastAPI, Streamlit, n8n y Google Gemini. Actualmente no se incluye una suite de pruebas automatizadas en el repositorio.
 
-```bash
-python -m pytest -q
-```
-
-El conjunto incluido en `tests/test_api.py` verifica consultas, filtros, creación, validaciones, actualización, eliminación, importación, indicadores, anomalías y fallos de persistencia. Los tests trabajan con una copia temporal de `data/ventas.json`.
-
-> **Importante:** varias aserciones esperan el dataset de ejemplo original con **14 ventas**. Si se modifica `data/ventas.json`, esas pruebas pueden dejar de coincidir con los valores esperados. Mantener los datos de referencia para reproducirlas; no incluir cambios de pruebas manuales en Git por accidente.
-
-**Comprobación rápida de la API:**
+**Comprobar API:**
 
 ```bash
 curl http://127.0.0.1:8000/health
@@ -238,7 +230,7 @@ curl http://127.0.0.1:8000/health
 
 Respuesta esperada: `{"estado":"ok"}`.
 
-**Comprobar WF03, rama False (solicitud inválida):**
+**WF03 — solicitud inválida:**
 
 ```bash
 curl -i -X POST http://127.0.0.1:5678/webhook/informe-ventas \
@@ -246,9 +238,9 @@ curl -i -X POST http://127.0.0.1:5678/webhook/informe-ventas \
   -d '{}'
 ```
 
-Respuesta esperada: **HTTP 400** con un JSON que contiene el campo `error`.
+Resultado esperado: HTTP `400` y un JSON con el campo `error`.
 
-**Comprobar WF03, rama True (solicitud válida):**
+**WF03 — solicitud válida:**
 
 ```bash
 curl -i -X POST http://127.0.0.1:5678/webhook/informe-ventas \
@@ -256,13 +248,13 @@ curl -i -X POST http://127.0.0.1:5678/webhook/informe-ventas \
   -d '{"accion":"generar_informe"}'
 ```
 
-Respuesta esperada: **HTTP 200** con un JSON que contiene `output` y el informe de Gemini (requiere WF02, Gemini y FastAPI operativos). También se puede verificar desde **Streamlit → Informe con IA → Generar informe con IA**.
+Resultado esperado: HTTP `200` con el campo `output` y el informe generado por Gemini. También se verifica desde **Streamlit → Informe con IA → Generar informe con IA**.
 
-**Verificaciones de integración realizadas en el laboratorio:** ejecución de los tres workflows, informe de Gemini mostrado en Streamlit, rechazo de solicitud inválida con HTTP 400 y ejecución exitosa de la solicitud válida. Estas comprobaciones de integración se realizaron manualmente; no forman parte de las pruebas automáticas de `pytest`.
+**Otras comprobaciones manuales:** alta, consulta, edición e importación de ventas; validación de datos incorrectos (HTTP `422`); ID inexistente (HTTP `404`); indicadores y anomalías; WF01 con registro de alerta; comunicación entre servicios. La ejecución automática programada de WF01 queda pendiente de acreditación.
 
 ## 10. Datos de ejemplo
 
-- `data/ventas.json` contiene **14 operaciones ficticias** en la versión de referencia. Incluye dos ventas idénticas de **Televisor** para demostrar detección de duplicados y valores atípicos.
+- `data/ventas.json` contiene **18 operaciones ficticias** en la versión actual. Incluye pares de ventas idénticas de **Televisor**, **Remera Lisa** y **Notebook** para demostrar duplicados, además de importes atípicos.
 - `data/ventas_nuevas.csv` contiene ventas válidas y una fila con **precio negativo** para probar la importación parcial y los mensajes de error.
 - Las operaciones de alta, modificación, eliminación o importación cambian el archivo `data/ventas.json` local. Es recomendable conservar una copia del dataset original antes de realizar demostraciones.
 
@@ -291,8 +283,6 @@ Grupo2_TP2_E_Prog_IA_LC/
     │   ├── arquitectura.md             # Diagrama / documentación de arquitectura
     │   ├── bitacora_ia.md              # Uso y decisiones de IA
     │   └── responsabilidades.md        # Responsabilidades por integrante
-    └── tests/
-        └── test_api.py                 # Pruebas de FastAPI
 ```
 
 ## 12. Reproducibilidad y límites conocidos
@@ -302,8 +292,8 @@ Grupo2_TP2_E_Prog_IA_LC/
 - Gemini depende de Internet, la disponibilidad del servicio y los límites de la cuota de la credencial configurada.
 - La ejecución programada de WF01 requiere publicación/activación; no debe confundirse la presencia del nodo Schedule con una garantía de ejecución diaria.
 - La reproducción en otra instancia requiere importar workflows y **reconfigurar referencias y credenciales** de n8n (ver sección 6).
-- Los documentos `Proyecto/docs/arquitectura.md` y `Proyecto/docs/bitacora_ia.md` se mantienen como entregables complementarios y requieren incorporar las últimas decisiones de integración de n8n/Gemini.
+- Los documentos `Proyecto/docs/arquitectura.md` y `Proyecto/docs/bitacora_ia.md` complementan el README y documentan las decisiones de integración.
 
 ---
 
-**Repositorio del equipo:** [Grupo2_TP2_E_Prog_IA_LC](https://github.com/Marian2057/Grupo2_TP2_E_Prog_IA_LC) · **Rama de desarrollo de esta integración:** `RamaDeCarlos`.
+**Repositorio del equipo:** [Grupo2_TP2_E_Prog_IA_LC](https://github.com/Marian2057/Grupo2_TP2_E_Prog_IA_LC)
