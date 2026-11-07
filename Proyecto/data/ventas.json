@@ -142,5 +142,37 @@
         "precio": 1500000.0,
         "cantidad": 2,
         "total_venta": 3000000.0
+    },
+    {
+        "id": 19,
+        "producto": "Monitor Samsung",
+        "categoria": "Informatica",
+        "precio": 250000.0,
+        "cantidad": 2,
+        "total_venta": 500000.0
+    },
+    {
+        "id": 20,
+        "producto": "Zapatillas Urbanas",
+        "categoria": "Indumentaria",
+        "precio": 32000.0,
+        "cantidad": 3,
+        "total_venta": 96000.0
+    },
+    {
+        "id": 21,
+        "producto": "Billetera",
+        "categoria": "Accesorios",
+        "precio": 9000.0,
+        "cantidad": 6,
+        "total_venta": 54000.0
+    },
+    {
+        "id": 22,
+        "producto": "Vela Aromática",
+        "categoria": "Hogar",
+        "precio": 4200.0,
+        "cantidad": 7,
+        "total_venta": 29400.0
     }
 ]

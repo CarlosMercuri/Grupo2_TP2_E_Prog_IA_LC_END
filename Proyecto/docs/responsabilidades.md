@@ -7,12 +7,12 @@
 
 | Apellido y nombre | Responsabilidad |
 |---|---|
-| Santana, Estefania | Participación y revisión integral del proyecto |
-| Mercuri, Carlos | Participación y revisión integral del proyecto |
-| Carrazan, Maria | Participación y revisión integral del proyecto |
-| D'Archivio, Gianluca | Participación y revisión integral del proyecto |
-| Fleming, Alejandro | Participación y revisión integral del proyecto |
-| Pi, Marianela | Participación y revisión integral del proyecto |
+| Santana, Estefania | Frontend: Streamlit e interacción con el usuario |
+| Mercuri, Carlos | Orquestación: n8n, workflows, webhooks e integración con Gemini |
+| Carrazan, Maria | Swagger UI: pruebas, validaciones y métodos HTTP |
+| D'Archivio, Gianluca | Infraestructura: Docker, Docker Compose y conectividad |
+| Fleming, Alejandro | Backend: Python, FastAPI, Uvicorn, Pydantic y lógica de negocio |
+| Pi, Marianela | Control de versiones: Git, GitHub, ramas, commits y merges |
 
 ## Modalidad de trabajo
 
