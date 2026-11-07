@@ -129,7 +129,7 @@ Los JSON exportados están versionados en [`Proyecto/n8n/workflows/`](Proyecto/n
 
 | Workflow | Disparador | Operación e integración | Decisión |
 |---|---|---|---|
-| **WF01 — Deteccion de Anomalias** | Manual; también incluye un disparador programado | `GET /anomalias` → registra alertas en una Data Table de n8n | `IF cantidad > 0`: registrar alerta / informar que no hay anomalías |
+| **WF01 — Deteccion de Anomalias** | Manual y programado diariamente a las 09:00 (publicado) | `GET /anomalias` → registra alertas en una Data Table de n8n | `IF cantidad > 0`: registrar alerta / informar que no hay anomalías |
 | **WF02 — Informe Inteligente de Ventas** | Manual o `When Executed by Another Workflow` | `GET /indicadores` → AI Agent + Google Gemini; el agente dispone de una herramienta HTTP para consultar `/anomalias` | `IF cantidad_operaciones > 0`: ejecutar el agente únicamente con ventas disponibles |
 | **WF03 — Integracion Streamlit IA** | Webhook HTTP `POST /webhook/informe-ventas` | Valida la solicitud, invoca WF02 como subworkflow y responde a Streamlit | `IF body.accion == "generar_informe"`: informe HTTP 200 / error HTTP 400 |
 
@@ -140,7 +140,7 @@ Los JSON exportados están versionados en [`Proyecto/n8n/workflows/`](Proyecto/n
 3. Si las hay, genera `mensaje_alerta` y registra una fila en la **Data Table** `alertas_anomalias`.
 4. Si no las hay, produce el mensaje `Sin anomalías detectadas.`.
 
-La tabla utilizada en el entorno de desarrollo contiene las columnas `fecha` (String), `cantidad` (Number) y `mensaje_alerta` (String). **La Data Table se debe crear o vincular manualmente al importar el workflow en otra instancia de n8n.** El workflow incorpora un disparador programado diario, pero su ejecución automática requiere que la versión correspondiente esté publicada/activada; se verificó su ejecución manual.
+La tabla utilizada en el entorno de desarrollo contiene las columnas `fecha` (String), `cantidad` (Number) y `mensaje_alerta` (String). **La Data Table se debe crear o vincular manualmente al importar el workflow en otra instancia de n8n.** El workflow está publicado con un disparador programado diariamente a las **09:00 (hora de Argentina)**. Su funcionamiento automático se comprobó temporalmente con dos ejecuciones consecutivas a intervalos de un minuto, antes de restaurar y publicar el horario diario. También se verificó el registro de alertas mediante ejecución manual.
 
 ### WF02 — Informe inteligente de ventas
 
@@ -220,7 +220,7 @@ Si Streamlit se despliega dentro de otro contenedor o en otra máquina, `127.0.0
 
 ## 9. Pruebas y verificación
 
-La verificación del MVP se realiza mediante pruebas funcionales y de integración de FastAPI, Streamlit, n8n y Google Gemini. Actualmente no se incluye una suite de pruebas automatizadas en el repositorio.
+La verificación del MVP se realiza mediante pruebas funcionales y de integración de FastAPI, Streamlit, n8n y Google Gemini. Se documentaron **15 casos aprobados** en [`Proyecto/docs/pruebas_funcionales.md`](Proyecto/docs/pruebas_funcionales.md). Actualmente no se incluye una suite de pruebas automatizadas en el repositorio.
 
 **Comprobar API:**
 
@@ -250,11 +250,11 @@ curl -i -X POST http://127.0.0.1:5678/webhook/informe-ventas \
 
 Resultado esperado: HTTP `200` con el campo `output` y el informe generado por Gemini. También se verifica desde **Streamlit → Informe con IA → Generar informe con IA**.
 
-**Otras comprobaciones manuales:** alta, consulta, edición e importación de ventas; validación de datos incorrectos (HTTP `422`); ID inexistente (HTTP `404`); indicadores y anomalías; WF01 con registro de alerta; comunicación entre servicios. La ejecución automática programada de WF01 queda pendiente de acreditación.
+**Pruebas funcionales realizadas:** 15 casos aprobados, entre ellos alta, consulta, modificación y eliminación de ventas; rechazo por validación (HTTP `422`), consulta de ID inexistente (HTTP `404`), indicadores, detección de anomalías, importación CSV (3 filas aceptadas y 1 rechazada), informe con Gemini y registro de 8 anomalías en la Data Table de n8n. La ejecución automática de WF01 se comprobó a intervalos temporales de un minuto; después se restauró la publicación diaria a las 09:00. Ver [resultados detallados](Proyecto/docs/pruebas_funcionales.md).
 
 ## 10. Datos de ejemplo
 
-- `data/ventas.json` contiene **18 operaciones ficticias** en la versión actual. Incluye pares de ventas idénticas de **Televisor**, **Remera Lisa** y **Notebook** para demostrar duplicados, además de importes atípicos.
+- `data/ventas.json` contiene **22 operaciones ficticias** después de las pruebas funcionales realizadas en el laboratorio. Incluye pares de ventas idénticas de **Televisor**, **Remera Lisa** y **Notebook** para demostrar duplicados, además de importes atípicos.
 - `data/ventas_nuevas.csv` contiene ventas válidas y una fila con **precio negativo** para probar la importación parcial y los mensajes de error.
 - Las operaciones de alta, modificación, eliminación o importación cambian el archivo `data/ventas.json` local. Es recomendable conservar una copia del dataset original antes de realizar demostraciones.
 
@@ -282,6 +282,7 @@ Grupo2_TP2_E_Prog_IA_LC/
     ├── docs/
     │   ├── arquitectura.md             # Diagrama / documentación de arquitectura
     │   ├── bitacora_ia.md              # Uso y decisiones de IA
+    │   ├── pruebas_funcionales.md      # Casos y resultados de pruebas
     │   └── responsabilidades.md        # Responsabilidades por integrante
 ```
 
@@ -290,7 +291,7 @@ Grupo2_TP2_E_Prog_IA_LC/
 - El prototipo utiliza **persistencia JSON local**: adecuada para el TP, pero no reemplaza una base de datos multiusuario ni un almacenamiento transaccional para producción.
 - La IA puede producir redacciones o recomendaciones imprecisas. Los indicadores provienen de FastAPI y deben contrastarse con los datos; las decisiones relevantes requieren **supervisión humana**.
 - Gemini depende de Internet, la disponibilidad del servicio y los límites de la cuota de la credencial configurada.
-- La ejecución programada de WF01 requiere publicación/activación; no debe confundirse la presencia del nodo Schedule con una garantía de ejecución diaria.
+- WF01 está publicado con horario diario a las 09:00; su automatización se verificó con una frecuencia temporal de un minuto. No se documenta aquí una ejecución real de la siguiente jornada a las 09:00.
 - La reproducción en otra instancia requiere importar workflows y **reconfigurar referencias y credenciales** de n8n (ver sección 6).
 - Los documentos `Proyecto/docs/arquitectura.md` y `Proyecto/docs/bitacora_ia.md` complementan el README y documentan las decisiones de integración.
 

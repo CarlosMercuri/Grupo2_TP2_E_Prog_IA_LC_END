@@ -1,7 +1,7 @@
 # Bitácora de uso de IA
 
 **Proyecto:** Analizador de Ventas — TP2, Elementos de Programación IA y LowCode  
-**Período documentado:** 27 de octubre al 2 de noviembre de 2026  
+**Período documentado:** 27 de octubre al 7 de noviembre de 2026
 **Alcance:** asistencia de IA durante el desarrollo y uso de IA como componente funcional del sistema.
 
 > Esta bitácora conserva el registro original y documenta decisiones y comprobaciones realizadas durante la integración. La IA asistió en tareas técnicas; las configuraciones, pruebas y publicaciones se verificaron en el entorno del proyecto. No deben confundirse las sugerencias de un asistente con resultados efectivamente probados.
@@ -25,7 +25,7 @@
 3. **Separar responsabilidades en tres workflows:** WF01 registra anomalías; WF02 elabora informes; WF03 expone el webhook, valida las solicitudes y delega la generación del informe a WF02.
 4. **Usar Docker para n8n, sin contenedorización total:** el `compose.yaml` inicia n8n; FastAPI y Streamlit permanecen ejecutándose directamente en Ubuntu. Esta elección satisface la integración utilizada en el laboratorio, sin afirmar que todos los servicios se desplieguen mediante Compose.
 5. **Controlar explícitamente los errores de entrada:** Streamlit envía `{"accion":"generar_informe"}`; WF03 rechaza solicitudes sin esa acción mediante HTTP 400.
-6. **Versionar de manera selectiva:** Posteriormente se incorporaron a GitHub las 18 ventas de ejemplo y se eliminó test_api.py por contener pruebas desactualizadas..
+6. **Versionar de manera selectiva:** Posteriormente se incorporaron a GitHub las 22 ventas de ejemplo y se eliminó test_api.py por contener pruebas desactualizadas.
 
 ## 3. Dificultades y correcciones
 
@@ -42,7 +42,7 @@
 
 ## 4. Verificaciones realizadas
 
-- **API REST:** se realizaron pruebas automatizadas durante el desarrollo. Posteriormente se eliminó `test_api.py` porque sus verificaciones dependían de un dataset original de 14 ventas. La aplicación utiliza actualmente 18 registros de ejemplo. Se mantienen las verificaciones funcionales y de integración.
+- **API REST:** se realizaron pruebas automatizadas durante el desarrollo. Posteriormente se eliminó `test_api.py` porque sus verificaciones dependían de un dataset original de 14 ventas. La aplicación utiliza actualmente 22 registros de ejemplo. Se mantienen las verificaciones funcionales y de integración.
 - **WF01:** ejecución manual de detección de anomalías y registro de una alerta en la Data Table de n8n. El Schedule Trigger fue configurado; **su ejecución automática no está acreditada por esa prueba manual**.
 - **WF02:** generación de un informe comercial con Gemini, tomando indicadores reales devueltos por FastAPI y con la herramienta de anomalías configurada.
 - **WF03, entrada inválida:** `POST /webhook/informe-ventas` con `{}` retornó **HTTP 400** y un cuerpo JSON con el campo `error`.
@@ -50,6 +50,17 @@
 - **Git:** se verificaron los JSON con `python3 -m json.tool` y se publicaron commits en `RamaDeCarlos`, preservando fuera del commit las ventas modificadas en pruebas locales.
 
 **Alcance de la evidencia:** las pruebas integradas de n8n y Streamlit descritas son **manuales**. No se desarrolló una suite automatizada de pruebas extremo a extremo para los tres workflows.
+
+- **2026-11-06 — WF01:** se verificó la ejecución automática mediante Schedule Trigger configurado temporalmente cada minuto. Se registraron dos ejecuciones exitosas. Posteriormente se restauró y publicó la programación diaria a las 09:00.
+
+- **2026-11-06/07 — Pruebas funcionales:** se comprobaron altas, consultas, modificaciones, eliminaciones, validaciones HTTP, indicadores, anomalías e importación CSV (3 registros aceptados y 1 rechazado).
+
+- **Integración con IA:** Streamlit generó correctamente un nuevo informe mediante n8n y Google Gemini, utilizando 22 operaciones y $38.368.300 de ingresos.
+
+- **Alertas n8n:** WF01 detectó 8 anomalías y registró correctamente la alerta en la Data Table `alertas_anomalias`.
+
+- **Evidencia:** los resultados están documentados en `pruebas_funcionales.md`.
+
 
 ## 5. Criterios de revisión humana y seguridad
 
@@ -59,10 +70,5 @@
 - La importación de workflows en una instalación diferente requiere volver a asociar credenciales, Data Tables y referencias entre workflows; que un JSON sea sintácticamente válido no garantiza que funcione sin esa configuración.
 - La solución es un **prototipo académico**: el webhook de laboratorio no implementa autenticación y no debe exponerse públicamente sin controles adicionales.
 
-## 6. Pendientes o mejoras no acreditadas como completadas
-
-- Confirmar y documentar la **activación y ejecución automática** del Schedule Trigger de WF01, si se desea utilizarlo en la demostración.
-- Mejorar la presentación Markdown de algunos informes generados por Gemini.
-- Verificar el procedimiento de importación en una instancia limpia de n8n y documentar la reasociación de credenciales y subworkflows si corresponde.
 
 **Referencias internas:** [`README.md`](../../README.md), [`arquitectura.md`](arquitectura.md), [`workflows n8n`](../n8n/workflows/)
